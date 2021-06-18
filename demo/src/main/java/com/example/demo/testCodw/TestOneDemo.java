@@ -7,6 +7,15 @@ public class TestOneDemo  {
   private String name;
   private Long id;
   private String classHome;
+  private String flagCount;
+
+  public String getFlagCount() {
+    return flagCount;
+  }
+
+  public void setFlagCount(String flagCount) {
+    this.flagCount = flagCount;
+  }
 
   public TestOneDemo() {
   }
