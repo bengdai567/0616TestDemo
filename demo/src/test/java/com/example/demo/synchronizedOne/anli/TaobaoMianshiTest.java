@@ -1,17 +1,16 @@
-package com.example.demo.synchronizedOne;
+package com.example.demo.synchronizedOne.anli;
 
 import org.assertj.core.util.Lists;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
 
-public class taobaoMianshiTest {
+/**
+ * 实现一个容器，提供两个方法，add，size
+ *  * 写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束
+ *  *
+ */
+public class TaobaoMianshiTest {
     //加volatile只是为了确保两个线程之间都能访问到
     volatile List<Object> list = Lists.newArrayList();
 //    List<Object> list = Collections.synchronizedList(lists);
@@ -26,7 +25,7 @@ public class taobaoMianshiTest {
     /*public static void main(String[] args) {
         //门栓方式进行禁停时由于不是同步容器，最后可能禁停的条数并不在所要禁停的位置
         CountDownLatch downLatch = new CountDownLatch(1);
-        TestContSize contSize = new TestContSize();
+        taobaoMianshiTest contSize = new taobaoMianshiTest();
         new Thread(()->{
                if (contSize.size()!=5){
                    try {
@@ -50,7 +49,7 @@ public class taobaoMianshiTest {
         },"t1").start();
     }*/
   /*  public static void main(String[] args) {
-        TestContSize contSize = new TestContSize();
+        taobaoMianshiTest contSize = new taobaoMianshiTest();
         new Thread(()->{
             for (int i = 0; i < 10; i++) {
                 contSize.add(new Object());
@@ -73,7 +72,7 @@ public class taobaoMianshiTest {
     }*/
   //即两个线程，一个线程监听另一个线程是否达到size标准，走另一个线程，然后以syn重量锁去锁定
   /*public static void main(String[] args) {
-      TestContSize contSize = new TestContSize();
+      taobaoMianshiTest contSize = new taobaoMianshiTest();
       final Object obj = new Object();
       Thread t1 = new Thread(() -> {
           synchronized (obj) {
@@ -111,7 +110,7 @@ public class taobaoMianshiTest {
 
   /* public static void main(String[] args) {
        //采用ReentrantLock失败，无法实现
-       TestContSize contSize = new TestContSize();
+       taobaoMianshiTest contSize = new taobaoMianshiTest();
        ReentrantLock lock = new ReentrantLock();
        Condition one = lock.newCondition();
        Condition two = lock.newCondition();
@@ -148,7 +147,99 @@ public class taobaoMianshiTest {
         },"t2").start();
    }*/
 
+    /*public static void main(String[] args) {
+        //单个锁定时，也会出现数量为6时才释放，存在时间问题
+       taobaoMianshiTest contSize = new taobaoMianshiTest();
+        Thread t1 = new Thread(() -> {
+            if (contSize.size() != 5) {
+                LockSupport.park();
+            }
+            System.out.println("t2释放！！！");
+        }, "t1");
+        t1.start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                contSize.add(new Object());
+                System.out.println("t1数据" + contSize.size());
+                if (contSize.size() == 5) {
+                    LockSupport.unpark(t1);
+                }
+            }
+
+        }, "t2").start();
+    }*/
+
+    /*static Thread t1 = null,t2=null;
     public static void main(String[] args) {
-//        final CyclicBarrier cyclicBarrier = new CyclicBarrier();
+        //这种方式也是相当可以的，内部也是eas操作
+        taobaoMianshiTest contSize = new taobaoMianshiTest();
+        t1 = new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                contSize.add(new Object());
+                System.out.println("t1数据" + contSize.size());
+                if (contSize.size() == 5) {
+                    LockSupport.unpark(t2);
+                    LockSupport.park();
+                }
+            }
+        }, "t1");
+        t2 = new Thread(() -> {
+            if (contSize.size() != 5) {
+                LockSupport.park();
+            }
+            LockSupport.unpark(t1);
+            System.out.println("t2释放！！！");
+        }, "t2");
+        t1.start();
+        taobaoMianshiTest.t2.start();
+    }*/
+    static Thread t1 = null,t2=null;
+    public static void main(String[] args) {
+        TaobaoMianshiTest c = new TaobaoMianshiTest();
+        Semaphore s = new Semaphore(1);
+
+        t1 = new Thread(() -> {
+            try {
+                s.acquire();
+                for (int i = 0; i < 5; i++) {
+                    c.add(new Object());
+                    System.out.println("add " + i);
+                }
+                s.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                t2.start();
+                t2.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                s.acquire();
+                for (int i = 5; i < 10; i++) {
+                    System.out.println(i);
+                }
+                s.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }, "t1");
+
+        t2 = new Thread(() -> {
+            try {
+                s.acquire();
+                System.out.println("t2 结束");
+                s.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, "t2");
+
+        //t2.start();
+        t1.start();
     }
 }

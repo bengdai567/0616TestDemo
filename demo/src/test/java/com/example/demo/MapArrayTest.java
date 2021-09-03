@@ -18,9 +18,33 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MapArrayTest {
 
+    @Test
+    public void testtMapValue(){
+        ArrayList<TestOneDemo> arrayList = Lists.newArrayList();
+        TestOneDemo testOne = new TestOneDemo();
+        testOne.setName("one");
+        testOne.setClassHome("one");
+        arrayList.add(testOne);
+        TestOneDemo testOne1 = new TestOneDemo();
+        testOne1.setName("one");
+        testOne1.setClassHome("two");
+        arrayList.add(testOne1);
+        TestOneDemo testOne2 = new TestOneDemo();
+        testOne2.setName("three");
+        arrayList.add(testOne2);
+      /*  Map<String, TestOneDemo> collect = arrayList.stream().collect(Collectors.toMap(item -> item.getName(), item -> item));
+        Collection<TestOneDemo> values = collect.values();
+        List<TestOneDemo> three = values.stream().filter(e -> e.getName().equals("three")).collect(Collectors.toList());
+        System.out.println(three);*/
+//        Map<String, TestOneDemo> collects = arrayList.stream().collect(Collectors.toMap(item -> item.getName(), item -> item));
+        Map<String, TestOneDemo> collect = arrayList.stream().collect(Collectors.toMap(item -> item.getName(), item -> item, (o, n) -> n));
+        System.out.println(collect);
+
+    }
     @Test
     public void testteos(){
         //查看字符串数组转成集合

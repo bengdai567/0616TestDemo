@@ -3,6 +3,8 @@ package com.example.demo;
 import com.example.demo.testCodw.TestOneDemo;
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.BeanFactory;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -27,14 +29,26 @@ public class streamTest {
         testOneDemo2.setName("three");
         testOneDemo2.setClassHome("4l");
         newList.add(testOneDemo2);
+        List<TestOneDemo> listist = new ArrayList<>();
         for (TestOneDemo oneDemo : newList) {
+            if (oneDemo.getName().equals("two")){
+                System.out.println(oneDemo);
+                continue;
+            }
+            System.out.println("继续执行");
+        }
+//        newList.parallelStream().forEach(e-> listist.add(BeanCopyTest.BatchCopyProperties().(new TestOneDemo(),e)));
+        newList.parallelStream().forEach(e->e.setFlagCount(e.getClassHome()));
+        System.out.println(newList);
+
+       /* for (TestOneDemo oneDemo : newList) {
             try {
                 Integer integer = Integer.valueOf(oneDemo.getClassHome());
             } catch (Exception e) {
                 System.out.println("====="+oneDemo.getClassHome());
             }
             System.out.println(oneDemo);
-        }
+        }*/
 
       /*  Map<String, String> collect = newList.stream().sorted(Comparator.comparing(TestOneDemo::getClassHome).reversed()).collect(Collectors.toMap(e -> e.getName(), e -> e.getClassHome()));
         System.out.println("accResult_: " + collect);*/
