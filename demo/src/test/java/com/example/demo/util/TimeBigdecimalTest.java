@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.util;
 
 import com.example.demo.testCodw.TestOneDemo;
 import org.assertj.core.util.Lists;
@@ -50,6 +50,33 @@ public class TimeBigdecimalTest {
         String dateString = format.format(date);
         System.out.println(dateString);
     }
+
+    @Test
+    //秒转换为天-时-分
+    public void secondToDay(){
+        long seconds = 5175895l;
+        String html = "0分";
+        if (seconds != 0) {
+            String format = "";
+            Object[] array;
+            int days = (int)(seconds / (60*60*24));
+            int hours = (int)(seconds/3600 - days*24);
+            int minutes = (int)(seconds/60 - hours*60 - days*24*60);
+            if (days > 0) {
+                format = "%1$,d天%2$,d时%3$,d分";
+                array = new Object[]{days,hours,minutes};
+            }else if(hours > 0){
+                format = "%1$,d时%2$,d分";
+                array = new Object[]{hours,minutes};
+            }else {
+                format = "%1$,d分";
+                array = new Object[]{minutes};
+            }
+            html = String.format(format, array);
+        }
+        System.out.println(html);
+    }
+
 
     @Test
     public void begdicemal(){

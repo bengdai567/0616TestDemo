@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.util;
 
 import com.alibaba.druid.filter.config.ConfigTools;
 import com.alibaba.druid.util.Base64;

@@ -8,6 +8,14 @@ class DemoApplicationTests {
 
 	@Test
 	void contextLoads() {
+		String s =null;
+		try {
+			String s1 = s + "dsd";
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+
+
 	}
 
 

@@ -3,6 +3,7 @@ package com.example.demo.queue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+//该案例通过100个线程，每个线程运行10000次，并发方式进行测试时的写和读效率
 public class Constants {
     public static final int COUNT = 1000000;
     public static final int THREAD_COUNT = 100;
@@ -25,6 +26,7 @@ class TestHashtable{
 
     static class MyThread extends Thread {
         int start;
+        //一个线程跑一万次
         int gap = count/THREAD_COUNT;
 
         public MyThread(int start) {
